@@ -1,0 +1,382 @@
+# Vibe Coding Protocol: Backend Refactoring
+
+You are an expert Fullstack Developer refactoring a legacy backend.
+We are using `Insomnia_2025-11-28.yaml` as the source of truth for API contracts.
+
+## 🧠 THE CORE LOOP (Strictly Follow)
+
+1.  **READ PLAN:** Check `refactoring_plan.md`. Identify the **first unchecked item** (`[ ]`).
+2.  **LOOKUP SPEC:** Find the corresponding request body/headers/params for that endpoint in `Insomnia_2025-11-28.yaml`.
+3.  **PRE-CHECK (Action Required):**
+    * Construct a `curl` command based on the YAML data.
+    * Execute it against the running server (`localhost:8080`).
+    * *Analyze the output:* Does it work? Is the JSON clean? Are there 500 errors?
+4.  **PLANNING:**
+    * Propose changes (Refactoring, Safety, Types, Optimization).
+    * *Wait for my approval.*
+5.  **EXECUTE:** Apply code changes.
+6.  **POST-CHECK:** Run the `curl` command again to verify the fix.
+7.  **UPDATE:** Mark the item as `[x]` in `refactoring_plan.md`.
+8.  **HALT:** Ask "Ready for the next endpoint?" before moving on.
+
+## 🛠 Specific Guidelines
+- **Uploads:** For `/api/upload`, ensure it returns a clean URL and is reusable by other services (Student avatar, Event attachment).
+- **Authentication:** Use the credentials `ceo@wist.uz` / `admin123` for testing.
+- **Safety:** Ensure strict input validation (Zod/Joi) for all POST/PUT bodies found in the YAML.
+
+## 🌍 Internationalization (i18n) Protocol (MANDATORY)
+
+* **NO HARDCODED STRINGS:** Never leave raw text strings (e.g., "Error loading data", "Success") inside components or services.
+* **Translation Keys:** Always extract text into the project's i18n JSON files (usually `public/locales` or `src/messages`).
+* **Tri-lingual Requirement:**
+    * When adding a new key, YOU MUST generate translations for:
+        1.  **English (en)**
+        2.  **Russian (ru)**
+        3.  **Uzbek (uz)** - *Critical: If `uz` is missing, translate it yourself contextually.*
+* **Format:** Use the project's existing i18n library (e.g., `next-i18next`, `react-intl`, or `t()` function).
+
+## 🌍 STRICT I18N PROTOCOL (Front-End & UI)
+
+**RULE: ZERO HARDCODED TEXT.**
+It is strictly FORBIDDEN to leave raw text strings (English or Russian) in:
+1.  **JSX/TSX Components:** Buttons, Labels, Table Headers, Placeholders, Toasts.
+2.  **Zod Schemas:** Validation error messages.
+
+**MANDATORY WORKFLOW:**
+Whenever you write text visible to the user:
+1.  **Create Key:** Add a new key to `src/lib/i18n.ts` inside the `translations` object.
+2.  **Translate Immediately:** You MUST provide values for **ALL 3 LANGUAGES**:
+    * `en` (English)
+    * `ru` (Russian)
+    * `uz` (Uzbek - generate contextual translation yourself).
+3.  **Implement:** Use the `t('section.key')` function in the code.
+    * *Bad:* `<Button>Add Employee</Button>`
+    * *Good:* `<Button>{t('employees.addBtn')}</Button>`
+    * *Bad:* `.min(5, "Too short")`
+    * *Good:* `.min(5, t('errors.tooShort'))`
+
+**BEFORE FINISHING ANY TASK:**
+1. **SCAN ALL MODIFIED FILES:** Check every file you modified for hardcoded strings
+2. **CHECK UI COMPONENTS:** Look for ANY raw text in:
+   - JSX/TSX: `<div>`, `<p>`, `<span>`, `<button>`, `<label>`, `<h1-h6>`, etc.
+   - Toast messages: `title: "..."`, `description: "..."` 
+   - Placeholders: `placeholder="..."`
+   - Button labels: `<Button>...</Button>`
+   - Badge text: `<Badge>...</Badge>`
+   - Error messages: Any user-facing error text
+3. **CHECK SERVICES:** Look for hardcoded strings in:
+   - Error messages in services
+   - Validation messages
+   - Console.log messages (can stay, but user-facing must be translated)
+4. **MANDATORY VERIFICATION:**
+   - Use `grep` to search for: `"[A-Z]`, `'[A-Z]`, `"[a-z]`, `'[a-z]` in modified files
+   - Check toast calls: `toast({ title: "...", description: "..." })`
+   - Check all button/label text
+5. **IF ANY HARDCODED STRING FOUND:** The task is FAILED. Fix it immediately by:
+   - Adding translation key to `ThemeContext.tsx` (EN, RU, UZ)
+   - Replacing hardcoded string with `t('key')`
+6. **FINAL CHECK:** Before marking task complete, verify NO hardcoded user-facing strings remain
+
+## 📄 Pagination & Filtering UI Protocol (MANDATORY)
+
+**RULE: API CAPABILITIES MUST MATCH UI.**
+When refactoring endpoints that support pagination, filtering, or sorting:
+1. **CHECK UI:** Verify if the corresponding page/component has pagination controls, filters, or sorting UI.
+2. **IF MISSING:** If API supports it but UI doesn't, you MUST:
+   * Add pagination controls (page numbers, next/prev buttons, items per page selector)
+   * Add filter UI (dropdowns, search inputs, checkboxes)
+   * Add sorting UI (column headers with sort indicators)
+   * Ensure all UI elements use i18n (EN, RU, UZ)
+3. **IF BROKEN:** If UI exists but doesn't work, fix the implementation to use the refactored service method.
+4. **VERIFY:** Test pagination/filtering/sorting in the UI after refactoring.
+
+**Examples:**
+- API: `GET /api/students?page=1&limit=10&search=...&grade=2`
+- UI Must Have: Page selector, limit selector, search input, grade filter dropdown
+- API: `GET /api/employees?page=2&status=Active`
+- UI Must Have: Page numbers, status filter dropdown
+
+## 🔗 URL State Management Protocol (MANDATORY)
+
+**RULE: PERSIST STATE IN URL QUERY PARAMS.**
+When implementing pagination, filtering, or sorting:
+1. **USE URL SEARCH PARAMS:** Always use React Router's `useSearchParams` (or equivalent) to store:
+   * Current page number
+   * Items per page (limit)
+   * Search queries
+   * Filter values (status, grade, category, etc.)
+   * Sort parameters
+2. **BENEFITS:**
+   * State persists on page reload
+   * Shareable URLs with filters applied
+   * Browser back/forward navigation works
+   * SEO-friendly
+   * Better UX (users can bookmark filtered views)
+3. **IMPLEMENTATION:**
+   * Read initial values from URL params on mount
+   * Update URL params when filters/pagination change
+   * Use URL params to make API requests
+   * Sync UI state with URL params
+4. **EXAMPLE:**
+   ```typescript
+   const [searchParams, setSearchParams] = useSearchParams();
+   const page = parseInt(searchParams.get('page') || '1', 10);
+   const limit = parseInt(searchParams.get('limit') || '10', 10);
+   const search = searchParams.get('search') || '';
+   
+   // Update URL when filters change
+   const handlePageChange = (newPage: number) => {
+     setSearchParams(prev => {
+       prev.set('page', newPage.toString());
+       return prev;
+     });
+   };
+   ```
+
+## 📝 Form Management Protocol (MANDATORY)
+
+**RULE: USE REACT-HOOK-FORM FOR COMPLEX FORMS.**
+When creating forms with multiple fields, validation, or complex state:
+1. **USE REACT-HOOK-FORM:** Install and use `react-hook-form` with `@hookform/resolvers` and `zod`:
+   ```bash
+   npm install react-hook-form @hookform/resolvers zod
+   ```
+2. **BENEFITS:**
+   * Automatic validation with Zod schemas
+   * Better performance (uncontrolled components)
+   * Less boilerplate code
+   * Built-in error handling
+   * Easy form state management
+3. **IMPLEMENTATION:**
+   * Create Zod schema for form validation
+   * Use `useForm` hook with `zodResolver`
+   * Use `register` for input fields
+   * Use `formState.errors` for error display
+   * Use `handleSubmit` for form submission
+4. **EXAMPLE:**
+   ```typescript
+   import { useForm } from 'react-hook-form';
+   import { zodResolver } from '@hookform/resolvers/zod';
+   import { z } from 'zod';
+   
+   const formSchema = z.object({
+     name: z.string().min(1, t('errors.fieldRequired')),
+     email: z.string().email(t('errors.invalidEmailFormat')),
+   });
+   
+   const { register, handleSubmit, formState: { errors } } = useForm({
+     resolver: zodResolver(formSchema),
+   });
+   
+   const onSubmit = (data: z.infer<typeof formSchema>) => {
+     // Handle submission
+   };
+   ```
+5. **EXCEPTIONS:**
+   * Simple forms with 1-2 fields can use `useState`
+   * Forms with complex conditional logic may need custom state management
+   * Always prefer react-hook-form for forms with 3+ fields
+
+## 🎯 Validation & Error Handling Protocol (MANDATORY)
+
+**RULE: USER-FRIENDLY VALIDATION WITH FALLBACKS.**
+When implementing validation:
+1. **ZOD SCHEMAS:** Use Zod for all validation (request/response)
+2. **OPTIONAL FIELDS:** For update requests, make all fields optional but validate if provided:
+   * Use `.optional()` for fields that can be omitted
+   * Use `.or(z.literal(''))` for fields that can be empty strings
+   * Filter out empty values before sending to API
+3. **ERROR MESSAGES:** Always use i18n for error messages:
+   * Service errors: Use `t()` from `@/lib/i18n`
+   * Component errors: Use `t()` from `useTheme()`
+   * Ensure language sync between localStorage and ThemeContext
+4. **FALLBACKS:**
+   * If validation is too complex, simplify it
+   * Always provide meaningful error messages
+   * Log validation errors to console for debugging
+5. **TOAST MESSAGES:** Always use `t()` function for toast messages:
+   * Check that language is correctly synced
+   * Use translation keys, never hardcoded strings
+   * Test all three languages (EN, RU, UZ)
+
+## 📚 Library Usage Protocol (MANDATORY)
+
+**RULE: USE ESTABLISHED LIBRARIES TO SIMPLIFY CODE.**
+When implementing features:
+1. **FORM MANAGEMENT:** Use `react-hook-form` for forms (see Form Management Protocol)
+2. **VALIDATION:** Use `zod` for schema validation
+3. **DATE HANDLING:** Use `date-fns` for date formatting
+4. **HTTP CLIENT:** Use existing `apiClient` wrapper
+5. **UI COMPONENTS:** Use existing `@/components/ui` components
+6. **INSTALLATION:** Don't hesitate to install libraries if they simplify code:
+   * Check if library is already in `package.json`
+   * Install with `npm install <package>`
+   * Update types if needed
+7. **BENEFITS:**
+   * Less code to maintain
+   * Better performance
+   * Fewer bugs
+   * Industry-standard solutions
+
+## 🔍 API Capabilities & UI Integration Protocol (MANDATORY)
+
+**RULE: USE ALL API CAPABILITIES IN UI.**
+When refactoring or implementing endpoints:
+1. **CHECK API PARAMETERS:** Always review ALL query parameters, filters, and options available in the API:
+   * Read `Insomnia_2025-11-28.yaml` carefully for ALL parameters
+   * Check if API supports filtering (e.g., `student_id`, `status`, `date_from`, `date_to`)
+   * Check if API supports pagination (`page`, `limit`)
+   * Check if API supports sorting (`sort_by`, `sort_order`)
+2. **MAP TO UI:** Every API capability MUST be used in the UI where relevant:
+   * If API supports `student_id` filter → Use it in student detail modal
+   * If API supports `status` filter → Add status filter dropdown
+   * If API supports date range → Add date picker
+   * If API supports search → Add search input
+3. **NO MOCK DATA:** Never use mock data when real API is available:
+   * Replace `mockTransactions`, `mockStudents`, etc. with real API calls
+   * Use service methods instead of hardcoded arrays
+4. **VERIFICATION:** After implementation:
+   * Test in browser to see actual data flow
+   * Verify filters work correctly
+   * Check that data updates when filters change
+   * Ensure all UI elements are translated (i18n)
+
+**Examples:**
+- API: `GET /api/finance/transactions?student_id=123` → Must be used in student detail modal Payments tab
+- API: `GET /api/students?grade=5&status=active` → UI must have grade and status filters
+- API: `GET /api/finance/expenses?category=Marketing&date_from=2024-01-01` → UI must have category filter and date picker
+
+## 🌐 Browser Testing Protocol (MANDATORY)
+
+**RULE: ALWAYS TEST IN BROWSER FOR UI VERIFICATION.**
+When implementing or refactoring features:
+1. **USE BROWSER TOOLS:** Always use browser automation tools to verify UI:
+   * Navigate to pages using `browser_navigate`
+   * Take snapshots with `browser_snapshot` to see actual UI state
+   * Check console messages with `browser_console_messages`
+   * Interact with UI elements (click buttons, fill forms, select options)
+2. **VERIFY DATA FLOW:** Test complete user flows:
+   * Open modals and verify data loads
+   * Fill forms and submit
+   * Check that data appears correctly after API calls
+   * Verify error handling and loading states
+3. **CHECK TRANSLATIONS:** Verify i18n in browser:
+   * Switch languages and check all text is translated
+   * Look for hardcoded strings in UI
+   * Verify toast messages are translated
+4. **IDENTIFY ISSUES:** Browser testing helps find:
+   * Missing API integrations (mock data instead of real API)
+   * Broken filters or pagination
+   * Missing translations
+   * UI/UX problems not visible in code
+5. **BEFORE MARKING COMPLETE:** Always:
+   * Test the feature in browser
+   * Verify all API capabilities are used
+   * Check all text is translated
+   * Ensure data flows correctly from API to UI
+6. **AFTER REFACTORING:** MANDATORY browser verification:
+   * **NEVER** mark a refactoring task as complete without testing in browser
+   * **ALWAYS** navigate to the affected page and verify data renders correctly
+   * **ALWAYS** check browser console for errors (401, 500, validation errors)
+   * **ALWAYS** verify that data actually appears in the UI (not just "no errors")
+   * **IF DATA DOESN'T RENDER:** Investigate immediately - check API calls, error handling, data mapping
+   * **DON'T ASSUME:** Just because code compiles doesn't mean it works - verify in browser
+   * **CRITICAL:** After refactoring ANY endpoint that displays data in UI:
+     * Open the page in browser using `browser_navigate`
+     * Wait for page to load (use `browser_wait_for`)
+     * Take snapshot with `browser_snapshot` to see actual UI state
+     * Check console with `browser_console_messages` for errors
+     * **VERIFY DATA IS VISIBLE:** If you see "No data" or empty state, the task is NOT complete
+     * **ONLY MARK COMPLETE** when you can see actual data rendered in the browser
+
+## 🔍 UI Field Verification Protocol (MANDATORY)
+
+**RULE: VERIFY ALL FIELDS ARE DISPLAYED CORRECTLY.**
+When refactoring or implementing features:
+1. **CHECK ALL TABLE COLUMNS:** After implementing a list/table view:
+   * Verify every column header has corresponding data displayed
+   * Check that all fields from API response are mapped correctly
+   * Ensure no empty cells where data should appear
+   * Verify field names match between API (snake_case) and UI (camelCase)
+2. **CHECK ALL MODAL FIELDS:** After implementing detail/edit modals:
+   * Verify every field from API is displayed
+   * Check that data normalization is correct (snake_case → camelCase)
+   * Ensure no fields are missing or showing undefined/null
+3. **VERIFY DATA MAPPING:** Always check:
+   * API response structure (snake_case)
+   * Normalization function (converts to camelCase)
+   * TypeScript interface (should use camelCase)
+   * UI component (uses camelCase)
+4. **BROWSER VERIFICATION:** Use browser tools to:
+   * Take snapshots and visually inspect all fields
+   * Check console for any undefined/null values
+   * Verify data appears in all expected locations
+5. **BE RESPONSIBLE:** Don't assume everything works - verify:
+   * Every field that should be displayed IS displayed
+   * Every column in a table has data
+   * Every property in a modal shows the correct value
+   * No silent failures or missing data
+
+**Examples:**
+- Table has "Payment Method" column → Verify `expense.paymentMethod` is displayed
+- Modal shows expense details → Verify all fields (category, payee, amount, date, paymentMethod, description) are visible
+- API returns `payment_method` → Normalize to `paymentMethod` for UI
+
+## 📋 Detail Modal Data Loading Protocol (MANDATORY)
+
+**RULE: ALWAYS FETCH FRESH DATA WHEN MODAL OPENS.**
+When implementing detail modals (view/edit modals):
+1. **ACCEPT ID, NOT OBJECT:** Detail modals MUST accept an ID (e.g., `eventId`, `expenseId`, `transactionId`) instead of the full object:
+   * *Bad:* `<EventDetailModal event={event} />`
+   * *Good:* `<EventDetailModal eventId={event.id} />`
+2. **LOAD ON OPEN:** Always fetch fresh data when modal opens using `useEffect`:
+   ```typescript
+   useEffect(() => {
+     if (open && entityId) {
+       loadEntity();
+     }
+   }, [open, entityId]);
+   ```
+3. **SHOW LOADING STATE:** Display loading indicator while fetching:
+   ```typescript
+   if (loading) {
+     return (
+       <Dialog open={open} onOpenChange={onOpenChange}>
+         <DialogContent>
+           <div className="flex items-center justify-center py-8">
+             <Loader2 className="w-8 h-8 animate-spin text-primary" />
+           </div>
+         </DialogContent>
+       </Dialog>
+     );
+   }
+   ```
+4. **HANDLE NOT FOUND:** Show appropriate message if entity not found:
+   ```typescript
+   if (!entity) {
+     return (
+       <Dialog open={open} onOpenChange={onOpenChange}>
+         <DialogContent>
+           <div className="text-center py-8 text-muted-foreground">
+             {t('entity.entityNotFound')}
+           </div>
+         </DialogContent>
+       </Dialog>
+     );
+   }
+   ```
+5. **BENEFITS:**
+   * Always shows latest data (no stale data)
+   * Consistent pattern across all modals
+   * Better error handling
+   * Loading states improve UX
+6. **EXISTING MODALS:** If a modal currently accepts an object, refactor it to:
+   * Accept ID instead
+   * Load data on open
+   * Show loading/error states
+
+**Examples:**
+- `ExpenseDetailModal` accepts `expenseId` and loads data ✅
+- `TransactionDetailModal` accepts `transactionId` and loads data ✅
+- `StudentDetailModal` accepts `student` but still loads fresh data ✅
+- `EventDetailModal` should accept `eventId` and load data (refactor needed)

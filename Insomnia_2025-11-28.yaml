@@ -1,0 +1,1377 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: WIST Backend API
+meta:
+  id: wrk_df91f4194b45416ca1b21bae5c4fb4c7
+  created: 1763649236707
+  modified: 1763649354726
+  description: ""
+collection:
+  - url: "{{ _.base_url }}/api/upload"
+    name: 1. Upload
+    meta:
+      id: req_c17e5740e4fb49d29c4bad0402769283
+      created: 1700000000000
+      modified: 1764045532093
+      isPrivate: false
+      description: ""
+      sortKey: -1000000100
+    method: POST
+    body:
+      mimeType: multipart/form-data
+      params:
+        - name: file
+          value: ""
+          fileName: /Users/emildv/Desktop/2025-10-17 14.20.14.jpg
+          type: file
+    headers:
+      - name: Content-Type
+        value: multipart/form-data
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - name: 1. Auth Service
+    meta:
+      id: fld_24f1569b43994b66abb44a42f41a3135
+      created: 1700000000000
+      modified: 1764325015544
+      sortKey: -100
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/api/auth/login"
+        name: 1. Login
+        meta:
+          id: req_68af5978a21c4ea58ec5f18595020202
+          created: 1700000000000
+          modified: 1763708225227
+          isPrivate: false
+          description: Login as CEO (ceo@wist.uz / admin123).
+          sortKey: -100
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"email": "ceo@wist.uz",
+            	"password": "admin123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/auth/refresh"
+        name: 2. Refresh Token
+        meta:
+          id: req_756d730f9d3742219567e78fa3f0dc5d
+          created: 1700000000000
+          modified: 1763649354722
+          isPrivate: false
+          description: Get new access token.
+          sortKey: -90
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"refresh_token": "{{ _.refresh_token }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/employees"
+        name: 4. List Employees
+        meta:
+          id: req_ad82c45ff91647d2884b0568f15d4e6d
+          created: 1763667769787
+          modified: 1764063139297
+          isPrivate: false
+          description: Shows online status and last active.
+          sortKey: 120
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+          - name: status
+            value: Active
+            disabled: true
+          - name: limit
+            value: "100"
+            disabled: false
+          - name: role
+            value: "123"
+            description: ""
+            disabled: true
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/employees"
+        name: 3. Create Employee
+        meta:
+          id: req_09d4e89523eb4a26bec4375aa3f2b928
+          created: 1763667781445
+          modified: 1764045532093
+          isPrivate: false
+          description: Create Staff (Admin only). Replaces Register.
+          sortKey: 20
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "fullName": "Dilnoza Nazarova",
+              "email": "ceo@wist.u",
+              "password": "admin123",
+              "role": "CEO",
+              "phone": "+998901234567",
+              "salary": 5000000,
+              "paymentSchedule": "Monthly",
+              "status": "Active",
+            	"telegramChatId": "8336381062"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/auth/login"
+        name: 1. Login
+        meta:
+          id: req_12486e33035248f7bdda6bff9844a6f0
+          created: 1763672692727
+          modified: 1763680956664
+          isPrivate: false
+          description: Login as CEO (ceo@wist.uz / admin123).
+          sortKey: -97.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"email": "ceo@wist.uz",
+            	"password": "admin123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/employees/2"
+        name: 5. Update Employee
+        meta:
+          id: req_4da42828a33f43be9cf1c84b67516c14
+          created: 1763708072968
+          modified: 1764045532093
+          isPrivate: false
+          description: Create Staff (Admin only). Replaces Register.
+          sortKey: 70
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "fullName": "Dilnoza Nazarova",
+              "email": "ттт@wist.uz",
+              "password": "finance321",
+              "role": "123",
+              "phone": "+123",
+              "salary": 5000000,
+              "paymentSchedule": "Monthly",
+              "status": "Active",
+            	"telegramChatId": "7729060863"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/employees/2"
+        name: 6. Delete Employee
+        meta:
+          id: req_4577b10d135e4f9896472abf424075ff
+          created: 1763708140311
+          modified: 1763708225227
+          isPrivate: false
+          description: Create Staff (Admin only). Replaces Register.
+          sortKey: 95
+        method: DELETE
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 4. Events Service
+    meta:
+      id: fld_28204515285d451e8a1588e07cd71eab
+      created: 1700000000000
+      modified: 1763649749375
+      sortKey: -70
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/api/events/REPLACE_WITH_EVENT_ID"
+        name: 4. Update Event
+        meta:
+          id: req_10e27718038e43b4957c05c9da61488a
+          created: 1700000000000
+          modified: 1763649354719
+          isPrivate: false
+          description: Change status or time.
+          sortKey: -70
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"title": "Parent Teacher Conference (Rescheduled)",
+            	"date": "2025-11-26",
+            	"status": "Completed"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/events/REPLACE_WITH_EVENT_ID"
+        name: 5. Delete Event
+        meta:
+          id: req_9f0288ec4a384564b324632a32484c83
+          created: 1700000000000
+          modified: 1763649354723
+          isPrivate: false
+          description: ""
+          sortKey: -60
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/events"
+        name: 2. List Events
+        meta:
+          id: req_9f331f2c0aed48b3973508e41932ce91
+          created: 1700000000000
+          modified: 1763649354723
+          isPrivate: false
+          description: Filter by date range and type.
+          sortKey: -90
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+          - name: limit
+            value: "10"
+          - name: startDate
+            value: 2025-11-01 00:00
+          - name: endDate
+            value: 2025-11-30 23:59
+          - name: type
+            value: Meeting
+            disabled: true
+          - name: status
+            value: Upcoming
+            disabled: true
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/events"
+        name: 1. Create Event
+        meta:
+          id: req_ee9c6b33ac5b4189aae79073d2ca4ec0
+          created: 1700000000000
+          modified: 1763649902413
+          isPrivate: false
+          description: Creates event matching TS interface.
+          sortKey: -100
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+            	"title": "Parent Teacher Conference",
+            	"type": "Meeting",
+            	"date": "2025-11-25",
+            	"time": "14:00",
+            	"endTime": "16:00",
+            	"location": "Main Auditorium",
+            	"locationType": "Offline",
+            	"description": "Quarterly meeting to discuss student progress.",
+            	"audience": "Parents",
+            	"attendees": 150,
+            	"organizer": "Head of Education",
+            	"status": "Upcoming",
+            	"category": "Academic",
+            	"color": "#3B82F6",
+            	"reminderSet": true,
+            	"attachments": [
+            		"http://localhost:8080/static/agenda.pdf"
+            	],
+            	"assignedTo": [
+            		"PARENT-UUID-555", "STUDENT-UUID-777", "ROLE-", "STUDETS", "USER", "GRADE-8-A"
+            		
+            	],
+            	"notifications": [
+            		{
+            			"id": "notif_1",
+            			"sentAt": "2025-11-20T10:00:00",
+            			"sentBy": "System",
+            			"recipients": "All Parents",
+            			"type": "email",
+            			"message": "Reminder: Meeting next week"
+            		}
+            	]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/events/72d9a317-543f-4bd4-b69e-079482e90420"
+        name: 3. Get Event (Detail)
+        meta:
+          id: req_f7b46b64e2974ce5986d874bb1f7d49c
+          created: 1700000000000
+          modified: 1763668036705
+          isPrivate: false
+          description: ""
+          sortKey: -80
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 5. Activity Logs
+    meta:
+      id: fld_7269060f268e4c5da5c0d9a288743387
+      created: 1700000000000
+      modified: 1763674033589
+      sortKey: -67.5
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/api/activity"
+        name: 1. List Logs
+        meta:
+          id: req_d4a7e44099c741ddb506600969262e06
+          created: 1763666050071
+          modified: 1763674033589
+          isPrivate: false
+          description: ""
+          sortKey: -95
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+          - name: search
+            value: ""
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/activity/stats"
+        name: 2. Activity Stats
+        meta:
+          id: req_f790b2a7a92e4b78b9d0e8cae1ade453
+          created: 1763666050071
+          modified: 1763668036705
+          isPrivate: false
+          description: ""
+          sortKey: -90
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 3. Finance Service
+    meta:
+      id: fld_784a3b4d799046dd80c7c30d2924ab97
+      created: 1700000000000
+      modified: 1763649749375
+      sortKey: -87.5
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/api/finance/transactions"
+        name: 3. Create Transaction
+        meta:
+          id: req_0dbac7cf496b48efb2f3a3fbbc1ba376
+          created: 1700000000000
+          modified: 1764324745929
+          isPrivate: false
+          description: Record a payment. Names are fetched automatically.
+          sortKey: -90
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"student_id": "9b3a8f41-d588-45b1-831e-082ec3da7d7e",
+            	"amount": 50,
+            	"payment_method": "Card",
+            	"payment_source": "Payme",
+            	"purpose": "Monthly Tuition",
+            	"date": "2025-11-21",
+            	"status": "Paid"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/api/finance/expenses/426eed55-f834-44dd-a39c-322b7c5d2a2c"
+        name: 9. Get Expense (Detail)
+        meta:
+          id: req_0f5e7fbb8e2348f0845db778baa4fc7f
+          created: 1700000000000
+          modified: 1764045532093
+          isPrivate: false
+          description: For Modal.
+          sortKey: -40
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/finance/expenses/stats"
+        name: 2. 📉 Expense Stats
+        meta:
+          id: req_183d13b84d0c475d84292888194f8cb1
+          created: 1700000000000
+          modified: 1763649354719
+          isPrivate: false
+          description: Top cards for Expenses page.
+          sortKey: -95
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/finance/transactions/REPLACE_WITH_TX_ID/status"
+        name: 6. Update TX Status
+        meta:
+          id: req_1cad3982139949d29d63d17779a6aabf
+          created: 1700000000000
+          modified: 1763649354720
+          isPrivate: false
+          description: Verify a payment.
+          sortKey: -70
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"status": "Paid"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/api/finance/transactions/54b37c23-d023-431f-b3d6-561f0e9803a6"
+        name: 5. Get Transaction (Detail)
+        meta:
+          id: req_45f2dcd5c4454641a66ced2bf59e682e
+          created: 1700000000000
+          modified: 1763649354720
+          isPrivate: false
+          description: For Receipt Modal.
+          sortKey: -75
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/finance/payments/stats"
+        name: 1. 📊 Payment Stats
+        meta:
+          id: req_8f2157246b9e48c8bdb60bb48fc2dce8
+          created: 1700000000000
+          modified: 1763649354722
+          isPrivate: false
+          description: Top cards for Payments page.
+          sortKey: -100
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/finance/transactions"
+        name: 4. List Transactions
+        meta:
+          id: req_9a84d9976e16437aac3584435638c163
+          created: 1700000000000
+          modified: 1764324745929
+          isPrivate: false
+          description: Filter payments.
+          sortKey: -80
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+          - name: limit
+            value: "10"
+          - name: status
+            value: Pending
+            disabled: true
+          - name: search
+            value: ""
+          - name: student_id
+            value: 9b3a8f41-d588-45b1-831e-082ec3da7d7e
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/finance/expenses"
+        name: 8. List Expenses
+        meta:
+          id: req_b83d7928f2dc45a5a6a1afcfe370d706
+          created: 1700000000000
+          modified: 1764045532093
+          isPrivate: false
+          description: ""
+          sortKey: -50
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+          - name: category
+            value: Office
+            disabled: true
+          - name: ""
+            value: "1"
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/finance/expenses"
+        name: 7. Create Expense
+        meta:
+          id: req_f6c58a0ace1a47e587653e23a5cd92ee
+          created: 1700000000000
+          modified: 1763649354724
+          isPrivate: false
+          description: Record an outcome.
+          sortKey: -60
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"category": "Office",
+            	"payee": "Tashkent City Utilities",
+            	"amount": 500000,
+            	"date": "2025-11-21",
+            	"payment_method": "Bank Transfer",
+            	"description": "Electricity bill",
+            	"attachments": [
+            		"http://localhost:8080/static/invoice.pdf"
+            	]
+            }
+        parameters:
+          - name: file
+            value: ""
+            disabled: false
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 2. Student Service
+    meta:
+      id: fld_be56ee17ac004bae9b5914ef58522997
+      created: 1700000000000
+      modified: 1763649922131
+      sortKey: -90
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/api/students"
+        name: 3. List Students
+        meta:
+          id: req_5185cfb29219469380f92bab245f9019
+          created: 1700000000000
+          modified: 1763649354721
+          isPrivate: false
+          description: ""
+          sortKey: -90
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+          - name: limit
+            value: "10"
+          - name: search
+            value: ""
+          - name: hasDebt
+            value: "true"
+            disabled: true
+          - name: grade
+            value: "2"
+            disabled: true
+          - name: status
+            value: active
+            disabled: true
+          - name: academicStatus
+            value: good
+            disabled: true
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/students/REPLACE_WITH_UUID"
+        name: 5. Update Student
+        meta:
+          id: req_529f7df7747d4552b217d050e99b91c6
+          created: 1700000000000
+          modified: 1763708225227
+          isPrivate: false
+          description: ""
+          sortKey: -70
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "test",
+            	"surname": "test2",
+            	"grade": 2,
+            	"className": "2-A",
+            	"dateOfBirth": "2018-07-07",
+            	"phone": "+998901234570",
+            	"email": "bekzod.r@student.wist.uz",
+            	"address": "Tashkent",
+            	"idPassport": "AD4567890",
+            	"enrollmentDate": "2022-09-01",
+            	"balance": 0,
+            	"totalOwed": 6000000,
+            	"avatar": "http://localhost:8080/static/image.jpg",
+            	"parents": [
+            		{
+            			"name": "Zarina Rasulova",
+            			"email": "zarina@example.com",
+            			"phone": "+998907778899",
+            			"relationship": "Mother"
+            		}
+            	]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/students/REPLACE_WITH_UUID"
+        name: 6. Delete Student
+        meta:
+          id: req_6d3c855506a94042975d416fdf458dc4
+          created: 1700000000000
+          modified: 1763649354721
+          isPrivate: false
+          description: ""
+          sortKey: -60
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/students/843f20c9-bcd2-4512-bd28-39517b84491b"
+        name: 4. Get Student
+        meta:
+          id: req_a18b47722168462aa87c7e75be9ebd99
+          created: 1700000000000
+          modified: 1763649354723
+          isPrivate: false
+          description: ""
+          sortKey: -80
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/students/stats"
+        name: 0. 📊 Student Dashboard
+        meta:
+          id: req_b02a6d509bd54cd39b1acc95e4df1ff6
+          created: 1700000000000
+          modified: 1763672113625
+          isPrivate: false
+          description: Stats for Students page.
+          sortKey: -120
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/students"
+        name: 2. Create Student (Full)
+        meta:
+          id: req_f52bcc66153243c99e4bf98e4845bc9d
+          created: 1700000000000
+          modified: 1764324745929
+          isPrivate: false
+          description: ""
+          sortKey: -100
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "test333",
+            	"surname": "test2",
+            	"grade": 2,
+            	"className": "2-A",
+            	"dateOfBirth": "2018-07-07",
+            	"phone": "+998901234570",
+            	"email": "bekzod.r@student.wist.uz",
+            	"address": "Tashkent",
+            	"idPassport": "AD4567890",
+            	"enrollmentDate": "2022-09-01",
+            	"balance": 10,
+            	"totalOwed": 6000000,
+            	"avatar": "http://localhost:8080/static/image.jpg",
+            	"parents": [
+            		{
+            			"name": "123 Rasulova",
+            			"email": "123@example.com",
+            			"phone": "+213",
+            			"relationship": "Father"
+            		}
+            	]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 6. Chat Service
+    meta:
+      id: fld_3684d39e0348417c9c81ab254eed8c9d
+      created: 1763673723772
+      modified: 1764057843647
+      sortKey: -65
+      description: ""
+  - name: NOTIFICATION
+    meta:
+      id: fld_8b7cd7f0bdfa449389bae25ac95fd6a8
+      created: 1764016197174
+      modified: 1764045532093
+      sortKey: -1000000000
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/api/notifications"
+        name: 2. List My Notifications
+        meta:
+          id: req_e7a18b921fa04f94bd0af87399fa20c0
+          created: 1764016197176
+          modified: 1764045532093
+          isPrivate: false
+          description: ""
+          sortKey: -90
+        method: GET
+        parameters:
+          - name: page
+            value: "1"
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/notifications/unread"
+        name: 3. Check Count Manually
+        meta:
+          id: req_006354aa621f4b7eb3afb3cf7309bb0e
+          created: 1764016197181
+          modified: 1764045532093
+          isPrivate: false
+          description: ""
+          sortKey: -80
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/notifications/read"
+        name: 4. Mark As Read
+        meta:
+          id: req_eeb11cb55d7441cfb4934a9a843dc220
+          created: 1764016197183
+          modified: 1764045532093
+          isPrivate: false
+          description: Send ID to mark one, or empty body to mark ALL.
+          sortKey: 20
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"notification_id": ""
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - name: 🔌 Real-time (WebSocket)
+        meta:
+          id: fld_60914123bda54844bb4cabba4acfccf6
+          created: 1764016197184
+          modified: 1764045532093
+          sortKey: -200
+          description: ""
+        children:
+          - url: "{{ _.base_url_socket }}/api/notifications/ws"
+            name: Notification count
+            meta:
+              id: ws-req_2747c0c4006945419df3267893c0ff57
+              created: 1764016197184
+              modified: 1764324745929
+              description: ""
+              sortKey: -1764010374073
+            settings:
+              encodeUrl: true
+              cookies:
+                store: true
+                send: true
+              followRedirects: global
+            authentication:
+              type: bearer
+              token: "{{ _.access_token }}"
+            headers:
+              - name: User-Agent
+                value: insomnia/12.1.0
+                description: ""
+                disabled: false
+      - name: ADMIN
+        meta:
+          id: fld_c22f742fb5c24999bf1c5b764684a799
+          created: 1764016197185
+          modified: 1764045532093
+          sortKey: -300
+          description: ""
+        children:
+          - url: "{{ _.base_url }}/api/notifications"
+            name: 1. Create Notification (Trigger)
+            meta:
+              id: req_608c1071c6964230ae557c4d6ed50f4c
+              created: 1764016197183
+              modified: 1764324745929
+              isPrivate: false
+              description: Send this, then check WebSocket log.
+              sortKey: -1764013382928
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"title": "Payment Reminder111233123123",
+                	"message": "Please check your invoice.",
+                	"type": "Alert",
+                	"target_audience": "All",
+                	"methods": [
+                		"telegram",
+                		"in-app"
+                	],
+                	"attachments": [
+                		""
+                	],
+                	"send_at": ""
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.access_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url
+              }}/api/notifications/admin/3b4b048f-8d44-4546-80e4-df69126e1f9a"
+            name: 4. Get Template Detail
+            meta:
+              id: req_04a4e3ab7bc248398f70d28c646f535c
+              created: 1764016197185
+              modified: 1764045532093
+              isPrivate: false
+              description: View single notification details.
+              sortKey: -1764013382628
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.access_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/api/notifications/admin/list"
+            name: 2. List History
+            meta:
+              id: req_7cabc7f9a4c24ad6a740048eba409c44
+              created: 1764016197185
+              modified: 1764045532093
+              isPrivate: false
+              description: Admin history of sent messages.
+              sortKey: -1764013382828
+            method: GET
+            parameters:
+              - name: page
+                value: "1"
+              - name: limit
+                value: "10"
+              - name: search
+                value: ""
+                disabled: true
+              - name: status
+                value: Processed
+                disabled: true
+              - name: type
+                value: Alert
+                disabled: true
+            authentication:
+              type: bearer
+              token: "{{ _.access_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/api/notifications/admin/stats"
+            name: 3. Dashboard Stats
+            meta:
+              id: req_8551d6b1ce044766b6a3077964beb955
+              created: 1764016197185
+              modified: 1764045532093
+              isPrivate: false
+              description: "Top cards: Total, Sent, Failed."
+              sortKey: -1764013382728
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.access_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url
+              }}/api/notifications/admin/a3fdb08a-33da-4298-b124-a3d3a34cbb13/l\
+              ogs"
+            name: 5. Get Sending Logs
+            meta:
+              id: req_87f7afb99f6040e99a20390c5d1ec7a4
+              created: 1764016197186
+              modified: 1764045532093
+              isPrivate: false
+              description: See who received it (User ID, Status).
+              sortKey: -1764013382528
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.access_token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: 💬 Chat Service
+    meta:
+      id: fld_81e273ad613049199452ffcf4165ecee
+      created: 1764021438338
+      modified: 1764045532093
+      sortKey: -1000000000
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/api/chat/conversations"
+        name: 1. List Conversations
+        meta:
+          id: req_767ae4c26944460e977a24fa9984e019
+          created: 1764021438339
+          modified: 1764045532093
+          isPrivate: false
+          description: Check if the new chat appeared here.
+          sortKey: -100
+        method: GET
+        parameters:
+          - name: section
+            value: internal
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/api/chat/messages"
+        name: 2. Send Message
+        meta:
+          id: req_cdf25b8adcad46349a6697b72977066d
+          created: 1764021438340
+          modified: 1764045532093
+          isPrivate: false
+          description: Send to the chat ID you got from List.
+          sortKey: -80
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"conversation_id": "cf2acf3f-45f4-414f-9914-334bd5cf97b9",
+            	"content": "Welcome to the team!23123123",
+            	"type": "internal",
+            	"attachments": []
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/api/chat/conversations/cf2acf3f-45f4-414f-9914-334bd5cf97b9/messag\
+          es"
+        name: 3. Get History
+        meta:
+          id: req_d3d71dd4777b4a77b0083b9c3e5ac6ef
+          created: 1764021438340
+          modified: 1764045532093
+          isPrivate: false
+          description: ""
+          sortKey: -70
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url_socket }}/api/chat/ws"
+        name: listen to messages
+        meta:
+          id: ws-req_50785b472631439e9d94b770ed47fd02
+          created: 1764021438341
+          modified: 1764324745929
+          description: ""
+          sortKey: -200
+        settings:
+          encodeUrl: true
+          cookies:
+            store: true
+            send: true
+          followRedirects: global
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_958ee0edd09df477bd336b018e7df971676258b7
+    created: 1763649354740
+    modified: 1763649354740
+environments:
+  name: Base Environment
+  meta:
+    id: env_d297e68382e34932bd635cf0ececef2e
+    created: 1700000000000
+    modified: 1764324745929
+    isPrivate: false
+  data:
+    access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsInJvbGUiOiJDRU8iLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzY0MDY2OTU2LCJpYXQiOjE3NjQwNjYwNTZ9.NPJY9luZpbjvyBGkoVTA6EpQ8W5tDc0_Vllq4Kvpev0
+    base_url: http://localhost:8080
+    base_url_local: https://104.248.137.229.sslip.io
+    base_url_socket: wss://104.248.137.229.sslip.io
+    refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsInJvbGUiOiJDRU8iLCJ0eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2NjIxOTE1OCwiaWF0IjoxNzYzNjI3MTU4fQ.HQMXvylJEWra0iNDZ4lIwn5UqEjfooWm4WXuc_PSNRg
