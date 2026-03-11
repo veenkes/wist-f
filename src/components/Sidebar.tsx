@@ -13,7 +13,10 @@ import {
   Activity,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  AlertCircle,
+  Sparkles,
+  ClipboardCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -24,8 +27,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { notificationService, chatService } from '@/services';
 
 const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed';
-const MIN_WIDTH = 64; // 16 * 4 = 64px (w-16)
-const DEFAULT_WIDTH = 200; // Ширина по размеру логотипа
+const MIN_WIDTH = 64;
+const DEFAULT_WIDTH = 200;
 
 const Sidebar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -39,14 +42,12 @@ const Sidebar: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_COLLAPSED_KEY, JSON.stringify(isCollapsed));
-    // Dispatch event for Layout to update margin
     const width = isCollapsed ? MIN_WIDTH : DEFAULT_WIDTH;
     window.dispatchEvent(new CustomEvent('sidebar-toggle', { 
       detail: { collapsed: isCollapsed, width } 
     }));
   }, [isCollapsed]);
 
-  // Dispatch initial event on mount
   useEffect(() => {
     const width = isCollapsed ? MIN_WIDTH : DEFAULT_WIDTH;
     window.dispatchEvent(new CustomEvent('sidebar-toggle', { 
@@ -54,40 +55,6 @@ const Sidebar: React.FC = () => {
     }));
   }, []);
 
-  // Load unread notifications count
-  // useEffect(() => {
-  //   if (!user) return;
-
-  //   const loadUnreadCount = async () => {
-  //     try {
-  //       const response = await notificationService.getUnreadCount();
-  //       const count = response?.count || 0;
-  //       setNotificationsBadge(count > 0 ? count : undefined);
-  //     } catch (error) {
-  //       setNotificationsBadge(undefined);
-  //     }
-  //   };
-
-  //   loadUnreadCount();
-
-  //   // Subscribe to WebSocket updates
-  //   const token = localStorage.getItem('access_token');
-  //   if (token) {
-  //     notificationService.connectWebSocket(token);
-  //     const unsubscribe = notificationService.onUnreadCountUpdate((count) => {
-  //       setNotificationsBadge(count > 0 ? count : undefined);
-  //     });
-
-  //     return () => {
-  //       if (unsubscribe) {
-  //         unsubscribe();
-  //       }
-  //       notificationService.disconnectWebSocket();
-  //     };
-  //   }
-  // }, [user]);
-
-  // Load unread messages count
   useEffect(() => {
     if (!user) return;
 
@@ -103,13 +70,11 @@ const Sidebar: React.FC = () => {
 
     loadUnreadMessages();
 
-    // Subscribe to WebSocket updates for chat
     const token = localStorage.getItem('access_token');
     if (token) {
       chatService.connectWebSocket(token);
       
       const unsubscribe = chatService.onMessage(() => {
-        // Reload conversations when new message arrives
         loadUnreadMessages();
       });
 
@@ -126,18 +91,47 @@ const Sidebar: React.FC = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  const navigationItems = [
-    { icon: LayoutDashboard, label: t('nav.dashboard'), path: '/dashboard' },
-    { icon: Users, label: t('nav.students'), path: '/students' },
-    { icon: CreditCard, label: t('nav.payments'), path: '/payments' },
-    { icon: Receipt, label: t('nav.expenses'), path: '/expenses' },
-    { icon: Calendar, label: t('nav.events'), path: '/events' },
-    { icon: Bell, label: t('nav.notifications'), path: '/notifications', badge: notificationsBadge },
-    { icon: MessageCircle, label: t('nav.support'), path: '/support', badge: supportBadge },
-    // Hide Employees for Accountant role
-    ...(user?.role !== 'Accountant' ? [{ icon: Briefcase, label: t('nav.employees'), path: '/employees' }] : []),
-  ];
+  const getNavigationItems = () => {
+    const commonItems = [
+      { icon: Bell, label: t('nav.notifications'), path: '/notifications', badge: notificationsBadge },
+      { icon: MessageCircle, label: t('nav.support'), path: '/support', badge: supportBadge },
+    ];
 
+    switch (user?.role) {
+      case 'Teacher':
+        return [
+          { icon: LayoutDashboard, label: t('nav.dashboard'), path: '/teacher' },
+          { icon: Users, label: t('nav.students'), path: '/teacher/students' },
+          { icon: Users, label: t('nav.parents'), path: '/teacher/parents' },
+          { icon: ClipboardCheck, label: t('nav.attendance'), path: '/teacher/attendance' },
+          { icon: Calendar, label: t('nav.schedule'), path: '/teacher/schedule' },
+          { icon: Sparkles, label: t('nav.reports'), path: '/teacher/reports' },
+          { icon: AlertCircle, label: t('nav.incidents'), path: '/teacher/incidents' },
+          { icon: Activity, label: t('nav.grades'), path: '/teacher/grades' },
+          ...commonItems,
+        ];
+        
+      case 'Accountant':
+        return [
+          { icon: LayoutDashboard, label: t('nav.dashboard'), path: '/dashboard' },
+          { icon: CreditCard, label: t('nav.payments'), path: '/payments' },
+          { icon: Receipt, label: t('nav.expenses'), path: '/expenses' },
+          ...commonItems,
+        ];
+      default:
+        return [
+          { icon: LayoutDashboard, label: t('nav.dashboard'), path: '/dashboard' },
+          { icon: Users, label: t('nav.students'), path: '/students' },
+          { icon: CreditCard, label: t('nav.payments'), path: '/payments' },
+          { icon: Receipt, label: t('nav.expenses'), path: '/expenses' },
+          { icon: Calendar, label: t('nav.events'), path: '/events' },
+          { icon: Briefcase, label: t('nav.employees'), path: '/employees' },
+          ...commonItems,
+        ];
+    }
+  };
+
+  const navigationItems = getNavigationItems();
   const currentWidth = isCollapsed ? MIN_WIDTH : DEFAULT_WIDTH;
 
   return (
@@ -146,7 +140,6 @@ const Sidebar: React.FC = () => {
         className="fixed left-0 top-0 h-screen bg-card border-r border-border shadow-card flex flex-col z-40 transition-all duration-300"
         style={{ width: `${currentWidth}px` }}
       >
-        {/* Logo and Branding with Toggle */}
         <div className={`relative py-4 flex items-center border-b border-border transition-all duration-300 ${isCollapsed ? 'px-0 justify-center' : 'px-4'}`} style={{ minHeight: '73px' }}>
           {!isCollapsed && (
             <div className="flex items-center flex-1 min-w-0 mr-2">
@@ -154,7 +147,6 @@ const Sidebar: React.FC = () => {
             </div>
           )}
           
-          {/* Toggle Button - всегда видимый, в шапке */}
           <Button
             variant="ghost"
             size="icon"
@@ -171,7 +163,6 @@ const Sidebar: React.FC = () => {
           </Button>
         </div>
 
-        {/* Navigation */}
         <nav className={`flex-1 overflow-y-auto p-3 space-y-1 transition-all duration-300 ${isCollapsed ? 'px-2' : 'px-2'}`}>
           {navigationItems.map((item) => {
             const IconComponent = item.icon;
@@ -179,6 +170,7 @@ const Sidebar: React.FC = () => {
               <NavLink
                 key={item.path}
                 to={item.path}
+                end={item.path === '/teacher' || item.path === '/dashboard'}
                 className={({ isActive }) =>
                   `group flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-200 relative ${
                     isCollapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2.5'
@@ -232,7 +224,6 @@ const Sidebar: React.FC = () => {
           })}
         </nav>
 
-        {/* User Profile */}
         <div className={`p-3 border-t border-border space-y-2 transition-all duration-300 ${isCollapsed ? 'px-2' : 'px-2'}`}>
           {isCollapsed ? (
             <Tooltip>

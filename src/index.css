@@ -203,3 +203,31 @@
     background: transparent;
   }
 }
+
+/* Student Portal - School Yellow/White Theme */
+.student-portal {
+  --sp-yellow: 45 93% 52%;
+  --sp-yellow-dark: 40 90% 42%;
+  --sp-yellow-light: 48 100% 95%;
+  --sp-yellow-muted: 45 60% 88%;
+  --sp-white: 0 0% 100%;
+  --sp-warm-white: 40 30% 98%;
+  --sp-text: 30 10% 18%;
+  --sp-text-secondary: 30 5% 45%;
+  --sp-border: 40 15% 90%;
+  --sp-green: 152 60% 40%;
+  --sp-red: 0 72% 51%;
+  --sp-orange: 25 95% 55%;
+}
+
+.dark .student-portal {
+  --sp-yellow: 45 85% 55%;
+  --sp-yellow-dark: 45 80% 48%;
+  --sp-yellow-light: 45 30% 15%;
+  --sp-yellow-muted: 45 20% 22%;
+  --sp-white: 30 10% 10%;
+  --sp-warm-white: 30 8% 12%;
+  --sp-text: 40 10% 90%;
+  --sp-text-secondary: 40 5% 60%;
+  --sp-border: 40 10% 20%;
+}

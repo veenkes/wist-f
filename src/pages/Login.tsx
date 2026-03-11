@@ -16,14 +16,21 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { login, isAuthenticated } = useAuth();
+  
+  // Достаем user из контекста, чтобы проверить его роль
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
+  // Эффект срабатывает, если пользователь уже авторизован (например, при обновлении страницы)
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      if (user?.role === 'Teacher') {
+        navigate('/teacher');
+      } else {
+        navigate('/dashboard');
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +46,21 @@ const Login: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await login(email, password);
+      const response = await login(email, password);
+      
       toast({
         title: t('login.success'),
         description: t('login.loggedInSuccessfully'),
       });
-      navigate('/dashboard');
+
+      // Перенаправляем в зависимости от роли (подхватит роль из ответа login или из контекста)
+      const userRole = response?.role || user?.role;
+      if (userRole === 'Teacher') {
+        navigate('/teacher');
+      } else {
+        navigate('/dashboard');
+      }
+      
     } catch (error: any) {
       toast({
         title: t('login.loginFailed'),

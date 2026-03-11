@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Login from "@/pages/Login";
 import Layout from "@/components/Layout";
 import NotFound from "./pages/NotFound";
+import { StudentPortal } from "./pages/student-portal";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,52 @@ const App = () => (
                     <Layout />
                   </ProtectedRoute>
                 } />
+                <Route path="/teacher" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/students" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                 <Route path="/teacher/parents" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/attendance" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/schedule" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/grades" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/incidents" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/teacher/reports" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/student/:id" element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/student-portal" element={<StudentPortal />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
@@ -101,7 +148,7 @@ const App = () => (
 );
 
 const LandingRoute = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   
   if (loading) {
     return (
@@ -114,7 +161,14 @@ const LandingRoute = () => {
     );
   }
   
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
+  if (isAuthenticated) {
+    if (user?.role === 'Teacher') {
+      return <Navigate to="/teacher" replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <Navigate to="/login" replace />;
 };
 
 export default App;
